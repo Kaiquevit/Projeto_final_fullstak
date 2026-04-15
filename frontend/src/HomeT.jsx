@@ -83,22 +83,25 @@ function HomeT() {
   // ======================
   // 🔄 TOGGLE COMPLETE
   // ======================
-  const handleToggleStatus = async (t) => {
+
+  const handleToggleStatus = async (id, statusAtual) => {
+    // Se estiver ativa, muda pra completa. Se estiver completa, muda pra ativa.
+    const novoStatus = statusAtual === 'ativa' ? 'completa' : 'ativa';
+
     try {
       await axios.put(
-        `http://localhost:8081/task/${t.id}`,
-        { status: t.status === 'ativa' ? 'completa' : 'ativa' },
+        `http://localhost:8081/task/${id}/status`, 
+        { status: novoStatus }, // Mandando o novo status pro backend
         {
           headers: {
             Authorization: `Bearer ${token}`
           }
         }
-      )
-
-      fetchTasks()
-
+      );
+      
+      fetchTasks(); // Atualiza a lista na tela
     } catch (err) {
-      console.log("ERRO STATUS:", err.response?.data || err.message)
+      console.log(err);
     }
   }
 
@@ -223,11 +226,11 @@ function HomeT() {
               </button>
 
               <button 
-                className="complete" 
-                onClick={() => handleToggleStatus(t)}
-              >
-                {t.status === 'ativa' ? 'Completar' : 'Ativar'}
-              </button>
+  className={t.status === 'completa' ? 'ativa' : 'complete'} 
+  onClick={() => handleToggleStatus(t.id, t.status)}
+>
+  {t.status === 'completa' ? 'Marcar como Ativa' : 'Completa'}
+</button>
 
             </div>
 

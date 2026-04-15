@@ -86,21 +86,7 @@ app.put('/task/edit/:id', verifyToken, (req, res) => {
 
 });
 
-app.put('/task/:id', verifyToken, (req, res) => {
-
-  const sql = "UPDATE lista SET status = 'completa' WHERE id = ? AND user_id = ?";
-
-  db.query(sql, [req.params.id, req.user.id], (err) => {
-
-    if (err) {
-      return res.status(500).json({ error: "Erro ao atualizar" });
-    }
-
-    res.json({ message: "Atualizada!" });
-  });
-
-});
-
+// ✅ DEIXA SÓ UMA
 app.put('/task/:id', verifyToken, (req, res) => {
 
   const sql = "UPDATE lista SET status = 'completa' WHERE id = ? AND user_id = ?";
@@ -177,7 +163,6 @@ function verifyToken(req, res, next) {
     return res.status(403).json({ error: "Token necessário" });
   }
 
-  // 🔥 suporta "Bearer TOKEN"
   const token = authHeader.split(" ")[1];
 
   if (!token) {
@@ -258,6 +243,26 @@ app.delete('/task/:id', verifyToken, (req, res) => {
 
 });
 
+// ======================
+// 🔄 ATUALIZAR STATUS DA TASK
+// ======================
+app.put('/task/:id/status', verifyToken, (req, res) => {
+
+  const { status } = req.body; 
+
+  if (!status) {
+    return res.status(400).json({ error: "Status não fornecido" });
+  }
+
+  const sql = "UPDATE lista SET status = ? WHERE id = ? AND user_id = ?";
+
+  db.query(sql, [status, req.params.id, req.user.id], (err) => {
+    if (err) {
+      return res.status(500).json({ error: "Erro ao atualizar status" });
+    }
+    res.json({ message: "Status atualizado com sucesso!" });
+  });
+});
 
 // ======================
 // 🚀 SERVER
